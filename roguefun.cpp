@@ -4,6 +4,10 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
 
+SDL_Window* gWindow = nullptr;
+SDL_Surface* gSurface = nullptr;
+SDL_Surface* gHelloWorld = nullptr;
+
 bool init() {
     // Initialization flag
     bool success{ true };
@@ -14,7 +18,7 @@ bool init() {
         success = false;
     } else {
         // Create window
-        if ( gWindow = SDL_CreateWindow("SDL3 Testing: Hello!", ScreenWidth, ScreenHeight, 0); gWindow == nullptr) {
+        if ( gWindow = SDL_CreateWindow("SDL3 Testing: Hello!", SCREEN_WIDTH, SCREEN_HEIGHT, 0); gWindow == nullptr) {
             SDL_Log("Window could not be created! SDL Error: %s\n", SDL_GetError());
             success = false;
         } else {

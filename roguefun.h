@@ -2,14 +2,11 @@
 #define ROGUEFUN_ROGUEFUN_H
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
-#include <string>
-
 
 /* Constants */
 // Screen Constants
-constexpr int ScreenWidth{ 640 };
-constexpr int ScreenHeight{ 480 };
+constexpr int SCREEN_WIDTH{ 640 };
+constexpr int SCREEN_HEIGHT{ 480 };
 
 /* Functions */
 // Starts up SDL, and creates the window.
@@ -23,12 +20,12 @@ void closeSDL();
 
 /* Global Vars */
 // The window being rendered to.
-inline SDL_Window* gWindow{ nullptr };
+extern SDL_Window* gWindow;
 
 // The surface contained by the game window.
-inline SDL_Surface* gSurface{ nullptr };
+extern SDL_Surface* gSurface;
 
 // The image to be loaded onto the screen.
-inline SDL_Surface* gHelloWorld{ nullptr };
+extern SDL_Surface* gHelloWorld;
 
 #endif //ROGUEFUN_ROGUEFUN_H
