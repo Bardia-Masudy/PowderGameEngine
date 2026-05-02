@@ -9,7 +9,7 @@
 
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
-LTexture gUpTexture, gDownTexture, gLeftTexture, gRightTexture;
+LTexture gUpTexture, gDownTexture, gLeftTexture, gRightTexture, gCursorTexture;
 
 bool init() {
     // Initialization flag
@@ -53,6 +53,13 @@ bool loadMedia() {
     if( gRightTexture.loadFromFile( "../assets/right.png" ) == false )
     {
         SDL_Log( "Unable to load right image!\n");
+        success = false;
+    }
+
+    // Load cursor image.
+    if( gCursorTexture.loadFromFile( "../assets/foo.png" ) == false )
+    {
+        SDL_Log( "Unable to load up image!\n");
         success = false;
     }
 

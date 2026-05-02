@@ -29,6 +29,6 @@ extern SDL_Renderer* gRenderer;
 
 // The image to be loaded onto the screen.
 
-extern LTexture gUpTexture, gDownTexture, gLeftTexture, gRightTexture;
+extern LTexture gUpTexture, gDownTexture, gLeftTexture, gRightTexture, gCursorTexture;
 
 #endif //ROGUEFUN_ROGUEFUN_H

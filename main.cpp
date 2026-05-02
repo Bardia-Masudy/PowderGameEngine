@@ -40,6 +40,8 @@ int main( int argc, char* args[] ) {
                     } else if (e.key.key == SDLK_RIGHT) {
                         currTexture = &gRightTexture;
                     }
+                } else if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+                    currTexture = &gUpTexture;
                 }
             }
 
@@ -86,6 +88,11 @@ int main( int argc, char* args[] ) {
             // Render image on screen
             currTexture->render((SCREEN_WIDTH - static_cast<float>(currTexture->getWidth())) * 0.5f,
                                 (SCREEN_HEIGHT - static_cast<float>(currTexture->getHeight())) * 0.5f);
+
+            // Render mouse "cursor"
+            float x = -1.f, y = -1.f;
+            SDL_GetMouseState( &x, &y );
+            gCursorTexture.render( x, y );
 
             // Update screen
             SDL_RenderPresent( gRenderer );
