@@ -3,6 +3,8 @@
 
 #include <SDL3/SDL.h>
 
+#include "LTexture.h"
+
 /* Constants */
 // Screen Constants
 constexpr int SCREEN_WIDTH{ 640 };
@@ -22,10 +24,10 @@ void closeSDL();
 // The window being rendered to.
 extern SDL_Window* gWindow;
 
-// The surface contained by the game window.
-extern SDL_Surface* gSurface;
+// The game window renderer.
+extern SDL_Renderer* gRenderer;
 
 // The image to be loaded onto the screen.
-extern SDL_Surface* gHelloWorld;
+extern LTexture gPNGTexture;
 
 #endif //ROGUEFUN_ROGUEFUN_H

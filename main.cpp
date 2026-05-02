@@ -1,7 +1,7 @@
 #include <iostream>
-#include "roguefun.h"
+#include "WindowManager.h"
 
-int main() {
+int main( int argc, char* args[] ) {
     // Final exit code
     int exitCode{ 0 };
 
@@ -32,13 +32,14 @@ int main() {
                 }
 
                 // Fill the surface white
-                SDL_FillSurfaceRect( gSurface, nullptr, SDL_MapSurfaceRGB( gSurface, 0xFF, 0xFF, 0xFF));
+                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                SDL_RenderClear( gRenderer );
 
                 // Render image on screen
-                SDL_BlitSurface( gHelloWorld, nullptr, gSurface, nullptr);
+                gPNGTexture.render( 0.f, 0.f );
 
                 // Update the surface
-                SDL_UpdateWindowSurface( gWindow );
+                SDL_RenderPresent( gRenderer );
             }
         }
     }

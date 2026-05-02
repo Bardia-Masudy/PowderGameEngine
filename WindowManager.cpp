@@ -1,12 +1,15 @@
 
-#include "roguefun.h"
+#include "WindowManager.h"
 
+#include <SDL3/SDL.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
 
+#include "LTexture.h"
+
 SDL_Window* gWindow = nullptr;
-SDL_Surface* gSurface = nullptr;
-SDL_Surface* gHelloWorld = nullptr;
+SDL_Renderer* gRenderer = nullptr;
+LTexture gPNGTexture;
 
 bool init() {
     // Initialization flag
@@ -18,12 +21,9 @@ bool init() {
         success = false;
     } else {
         // Create window
-        if ( gWindow = SDL_CreateWindow("SDL3 Testing: Hello!", SCREEN_WIDTH, SCREEN_HEIGHT, 0); gWindow == nullptr) {
+        if ( SDL_CreateWindowAndRenderer("SDL3 Testing: Hello!", SCREEN_WIDTH, SCREEN_HEIGHT, 0, &gWindow, &gRenderer) == false) {
             SDL_Log("Window could not be created! SDL Error: %s\n", SDL_GetError());
             success = false;
-        } else {
-            //Get window surface
-            gSurface = SDL_GetWindowSurface(gWindow);
         }
     }
 
@@ -35,23 +35,23 @@ bool loadMedia() {
     bool success{ true };
 
     // Load splash image
-    std::string imagePath{ "../hello.bmp" };
-    if (gHelloWorld = SDL_LoadBMP( imagePath.c_str() ); gHelloWorld == nullptr ) {
-        SDL_Log("Unable to load image %s ! SDL Error: %s\n", imagePath.c_str(), SDL_GetError() );
+    if (gPNGTexture.loadFromFile("../hello.bmp") == false) {
+        SDL_Log("Failed to load texture! SDL Error: %s\n", SDL_GetError());
         success = false;
     }
+
     return success;
 }
 
 void closeSDL() {
     // Clean up surface
-    SDL_DestroySurface( gHelloWorld );
-    gHelloWorld = nullptr;
+    gPNGTexture.destroy();
 
     // Destroy window
+    SDL_DestroyRenderer( gRenderer );
+    gRenderer = nullptr;
     SDL_DestroyWindow( gWindow );
     gWindow = nullptr;
-    gSurface = nullptr;
 
     // Quit SDL subsystems
     SDL_Quit();
