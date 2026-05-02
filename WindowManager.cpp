@@ -35,22 +35,22 @@ bool loadMedia() {
     bool success{ true };
 
     //Load directional images
-    if( gUpTexture.loadFromFile( "../up.png" ) == false )
+    if( gUpTexture.loadFromFile( "../assets/up.png" ) == false )
     {
         SDL_Log( "Unable to load up image!\n");
         success = false;
     }
-    if( gDownTexture.loadFromFile( "../down.png" ) == false )
+    if( gDownTexture.loadFromFile( "../assets/down.png" ) == false )
     {
         SDL_Log( "Unable to load down image!\n");
         success = false;
     }
-    if( gLeftTexture.loadFromFile( "../left.png" ) == false )
+    if( gLeftTexture.loadFromFile( "../assets/left.png" ) == false )
     {
         SDL_Log( "Unable to load left image!\n");
         success = false;
     }
-    if( gRightTexture.loadFromFile( "../right.png" ) == false )
+    if( gRightTexture.loadFromFile( "../assets/right.png" ) == false )
     {
         SDL_Log( "Unable to load right image!\n");
         success = false;
