@@ -9,7 +9,7 @@
 
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
-LTexture gPNGTexture;
+LTexture gUpTexture, gDownTexture, gLeftTexture, gRightTexture;
 
 bool init() {
     // Initialization flag
@@ -34,9 +34,25 @@ bool loadMedia() {
     // File loading flag
     bool success{ true };
 
-    // Load splash image
-    if (gPNGTexture.loadFromFile("../hello.bmp") == false) {
-        SDL_Log("Failed to load texture! SDL Error: %s\n", SDL_GetError());
+    //Load directional images
+    if( gUpTexture.loadFromFile( "../up.png" ) == false )
+    {
+        SDL_Log( "Unable to load up image!\n");
+        success = false;
+    }
+    if( gDownTexture.loadFromFile( "../down.png" ) == false )
+    {
+        SDL_Log( "Unable to load down image!\n");
+        success = false;
+    }
+    if( gLeftTexture.loadFromFile( "../left.png" ) == false )
+    {
+        SDL_Log( "Unable to load left image!\n");
+        success = false;
+    }
+    if( gRightTexture.loadFromFile( "../right.png" ) == false )
+    {
+        SDL_Log( "Unable to load right image!\n");
         success = false;
     }
 
@@ -45,7 +61,10 @@ bool loadMedia() {
 
 void closeSDL() {
     // Clean up surface
-    gPNGTexture.destroy();
+    gUpTexture.destroy();
+    gDownTexture.destroy();
+    gLeftTexture.destroy();
+    gRightTexture.destroy();
 
     // Destroy window
     SDL_DestroyRenderer( gRenderer );

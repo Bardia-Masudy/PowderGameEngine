@@ -22,24 +22,73 @@ int main( int argc, char* args[] ) {
             SDL_Event e;
             SDL_zero( e );
 
-            // Main loop
-            while ( quit == false ) {
-                // Get event data
-                while (SDL_PollEvent( &e ) == true ) {
-                    if (e.type == SDL_EVENT_QUIT) {
-                        quit = true;
+            LTexture* currTexture = &gUpTexture;
+            SDL_Color bgColour{ 0xFF, 0xFF, 0xFF, 0xFF };
+
+            while (quit == false) {
+                            // Get event data
+            while ( SDL_PollEvent( &e ) == true ) {
+                if (e.type == SDL_EVENT_QUIT) {
+                    quit = true;
+                } else if (e.type == SDL_EVENT_KEY_DOWN) {
+                    if (e.key.key == SDLK_UP) {
+                        currTexture = &gUpTexture;
+                    } else if (e.key.key == SDLK_DOWN) {
+                        currTexture = &gDownTexture;
+                    } else if (e.key.key == SDLK_LEFT) {
+                        currTexture = &gLeftTexture;
+                    } else if (e.key.key == SDLK_RIGHT) {
+                        currTexture = &gRightTexture;
                     }
                 }
+            }
 
-                // Fill the surface white
-                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-                SDL_RenderClear( gRenderer );
+            // Reset background colour to white
+            bgColour.r = 0xFF;
+            bgColour.g = 0xFF;
+            bgColour.b = 0xFF;
 
-                // Render image on screen
-                gPNGTexture.render( 0.f, 0.f );
+            //Set background colour based on key state
+            const bool* keyStates = SDL_GetKeyboardState( nullptr );
+            if( keyStates[ SDL_SCANCODE_UP ] == true )
+            {
+                //Red
+                bgColour.r = 0xFF;
+                bgColour.g = 0x00;
+                bgColour.b = 0x00;
+            }
+            else if( keyStates[ SDL_SCANCODE_DOWN ] == true )
+            {
+                //Green
+                bgColour.r = 0x00;
+                bgColour.g = 0xFF;
+                bgColour.b = 0x00;
+            }
+            else if( keyStates[ SDL_SCANCODE_LEFT ] == true )
+            {
+                //Yellow
+                bgColour.r = 0xFF;
+                bgColour.g = 0xFF;
+                bgColour.b = 0x00;
+            }
+            else if( keyStates[ SDL_SCANCODE_RIGHT ] == true )
+            {
+                //Blue
+                bgColour.r = 0x00;
+                bgColour.g = 0x00;
+                bgColour.b = 0xFF;
+            }
 
-                // Update the surface
-                SDL_RenderPresent( gRenderer );
+            // Fill the background
+            SDL_SetRenderDrawColor( gRenderer, bgColour.r, bgColour.g, bgColour.b, 0xFF );
+            SDL_RenderClear( gRenderer );
+
+            // Render image on screen
+            currTexture->render((SCREEN_WIDTH - static_cast<float>(currTexture->getWidth())) * 0.5f,
+                                (SCREEN_HEIGHT - static_cast<float>(currTexture->getHeight())) * 0.5f);
+
+            // Update screen
+            SDL_RenderPresent( gRenderer );
             }
         }
     }
