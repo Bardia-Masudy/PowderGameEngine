@@ -7,24 +7,26 @@
 class Grid {
 public:
     Grid() = delete;
+
     ~Grid();
-    Grid( const Grid& ) = delete;
-    Grid( Grid&& ) = delete;
+
+    Grid(const Grid &) = delete;
+
+    Grid(Grid &&) = delete;
 
     // Generate new empty Grid with given dimensions.
-    Grid( int width, int height );
+    Grid(int width, int height);
 
     // Add pixel at location.
-    void setCell( int x, int y, char state, int radius ) const;
+    void setCell(int x, int y, char state, int radius) const;
 
     // Generates a new grid following established rules for each pixel and deletes this one.
-    Grid* nextGrid();
+    Grid *nextGrid();
 
     // Converts Grid to SDLSurface of given dimensions.
-    void updateTexture(SDL_Texture*) const;
+    void updateTexture(SDL_Texture *) const;
 
 private:
-
     // Cell def, stores bitwise info regarding its state.
     typedef struct Cell {
         char state = 0;
@@ -33,10 +35,10 @@ private:
     int width, height;
 
     // 1D array of cells
-    Cell* gridData;
+    Cell *gridData;
 
     // Returns the state at a position, or -1 if it's outside of bounds.
-    char getStateSafely( int x, int y ) const;
+    char getStateSafely(int x, int y) const;
 };
 
 
