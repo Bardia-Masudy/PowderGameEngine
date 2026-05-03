@@ -1,5 +1,6 @@
 #ifndef ROGUEFUN_GRID_H
 #define ROGUEFUN_GRID_H
+#include <SDL3/SDL_render.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_surface.h>
 
@@ -10,9 +11,7 @@ public:
     Grid() = delete;
     ~Grid();
     Grid( const Grid& ) = delete;
-    Grid& operator=( const Grid& ) = delete;
     Grid( Grid&& ) = delete;
-    Grid& operator=( Grid&& ) = delete;
 
     // Generate new empty Grid with given dimensions.
     Grid( int width, int height );
@@ -20,16 +19,17 @@ public:
     // Add pixel at location.
     void addPixel( int x, int y, char state );
 
-    // Generates a new grid following established rules for each pixel.
-    Grid& newGrid( const Grid& oldGrid );
+    // Generates a new grid following established rules for each pixel and deletes this one.
+    Grid* nextGrid();
 
     // Converts Grid to SDLSurface of given dimensions.
-    SDL_Surface* getSurface( int width, int height );
+    void updateTexture(SDL_Texture*) const;
+
 private:
 
     // Pixel def, stores bitwise info regarding its state.
-    typedef struct {
-        char state;
+    typedef struct Pixel {
+        char state = 0;
     } Pixel;
 
     int width, height;

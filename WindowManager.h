@@ -14,9 +14,6 @@ constexpr int SCREEN_HEIGHT{ 480 };
 // Starts up SDL, and creates the window.
 bool init();
 
-// Loads media
-bool loadMedia();
-
 // Frees media and shuts down SDL
 void closeSDL();
 
@@ -26,9 +23,5 @@ extern SDL_Window* gWindow;
 
 // The game window renderer.
 extern SDL_Renderer* gRenderer;
-
-// The image to be loaded onto the screen.
-
-extern LTexture gUpTexture, gDownTexture, gLeftTexture, gRightTexture, gCursorTexture;
 
 #endif //ROGUEFUN_ROGUEFUN_H
