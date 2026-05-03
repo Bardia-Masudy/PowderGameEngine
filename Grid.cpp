@@ -3,12 +3,21 @@
 #include <cstdlib>
 #include <stdlib.h>
 
-Grid::Grid( int width, int height ): width{width}, height {height}, gridData{new Pixel[width * height]} {}
+Grid::Grid( int width, int height ): width{width}, height {height}, gridData{new Cell[width * height]} {}
 
-Grid::~Grid() { delete [] gridData; } // TODO: Revisit to make sure deletes properly.
+Grid::~Grid() { delete [] gridData; } // TODO: valgrind check
 
-void Grid::addPixel( int x, int y, char state) {
-    gridData[x + y * width].state = state;
+void Grid::setCell( int x, int y, char state, int radius ) const {
+    for (int xDiff = -radius; xDiff < radius; xDiff++) {
+        for (int yDiff = -radius; yDiff < radius; yDiff++) {
+            if (xDiff * xDiff + yDiff * yDiff <= radius * radius) {
+                int newX = x + xDiff;
+                int newY = y + yDiff;
+                if (getStateSafely( newX, newY ) != -1)
+                    gridData[newX + newY * width].state = state;
+            }
+        }
+    }
 }
 
 Grid* Grid::nextGrid() {
@@ -34,5 +43,15 @@ void Grid::updateTexture( SDL_Texture* texture ) const {
         }
 
         SDL_UnlockTexture(texture);
+    }
+}
+
+char Grid::getStateSafely( int x, int y ) const {
+    int i = x + y * width;
+
+    if (i > 0 && i < width * height) {
+        return gridData[i].state;
+    } else {
+        return -1;
     }
 }

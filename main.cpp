@@ -20,7 +20,7 @@ int main( int argc, char* args[] ) {
         SDL_Event e;
         SDL_zero( e );
 
-        Grid* currGrid = new Grid( SCREEN_WIDTH, SCREEN_HEIGHT );
+        auto currGrid = new Grid( SCREEN_WIDTH, SCREEN_HEIGHT );
         char material = 1;
         bool isMouseDown = false;
 
@@ -46,11 +46,12 @@ int main( int argc, char* args[] ) {
                     } else if (e.key.key == SDLK_4) {
                         material = 3; // Water
                     }
+                    // TODO: Known bug, mouse x coordinate wraps off of the edge.
                 } else if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN || (e.type == SDL_EVENT_MOUSE_MOTION && isMouseDown) ) {
                     isMouseDown = true;
-                    float x = -1.f, y = -1.f;
-                    SDL_GetMouseState( &x, &y );
-                    currGrid->addPixel( x, y, material );
+                    float mouseX = -1.f, mouseY = -1.f;
+                    SDL_GetMouseState( &mouseX, &mouseY );
+                    currGrid->setCell( static_cast<int>(mouseX), static_cast<int>(mouseY), material, 4 );
                 } else if (e.type == SDL_EVENT_MOUSE_BUTTON_UP) {
                     isMouseDown = false;
                 }
