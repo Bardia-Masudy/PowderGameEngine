@@ -17,6 +17,9 @@ public:
     // Add pixel at location.
     void setCell( int x, int y, char state, int radius ) const;
 
+    // Given state of pixel and its neighbours,
+    char getNextState(char vicinity[]) const;
+
     // Generates a new grid following established rules for each pixel and deletes this one.
     Grid* nextGrid();
 

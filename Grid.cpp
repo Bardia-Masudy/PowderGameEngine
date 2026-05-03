@@ -23,20 +23,76 @@ void Grid::setCell( int x, int y, char state, int radius ) const {
 Grid* Grid::nextGrid() { // TODO: implement pixel rules.
     auto nextGrid = new Grid(width, height);
 
-    for (int i = 0; i < width * height; i++) {
-        if (getStateSafely(i - width) == 3 && gridData[i].state == 0) {
-            nextGrid->gridData[i].state = 3;
-        } else if (getStateSafely(i + width) == 0 && gridData[i].state == 3) {
-            nextGrid->gridData[i].state = 0;
-        } else if (getStateSafely(i + width + 1) == 0 && gridData[i].state == 0) {
-
-        } else {
-            nextGrid->gridData[i].state = gridData[i].state;
-        }
+    for (int i = width * height - 1; i > 0; i--) {
+        char vicinity[9] = {
+            getStateSafely(i - width - 1),
+            getStateSafely(i - width),
+            getStateSafely(i - width + 1),
+            getStateSafely(i - 1),
+            getStateSafely(i),
+            getStateSafely(i + 1),
+            getStateSafely(i + width - 1),
+            getStateSafely(i + width),
+            getStateSafely(i + width + 1),
+        };
+        nextGrid->gridData[i].state = getNextState(vicinity);
     }
 
     return nextGrid;
 }
+
+char Grid::getNextState(char vicinity[]) const {
+    char prevState = vicinity[4];
+
+    switch (prevState) {
+        case 0:
+            if (vicinity[1] == 3)
+                return 3;
+            if (vicinity[0] == 3 && vicinity[3] != 0)
+                return 3;
+            if (vicinity[2] == 3 && vicinity[5] != 0)
+                return 3;
+            return 0;
+            break;
+        case 1: // Wood
+            return 1;
+            break;
+        case 2: // Fire
+            return 2;
+            break;
+        case 3: // Water
+            if (vicinity[7] == 0)
+                return 0;
+            if (vicinity[8] == 0 && vicinity[7] != 0)
+                return 0;
+            if (vicinity[6] == 0 && vicinity[7] != 0)
+                return 0;
+            return 3;
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
+/*
+ * Cell Logic
+ *
+ * Water falls downwards. When it collides with something solid, it will shift left or right depending on it's y value.
+ * ...    ...
+ * .w. -> .0.
+ * .0.    .w.
+ *
+ * ...    ...    ...
+ * owo -> wo. or .ow
+ * .X.    .X.    .X.
+ *
+ * When water contacts fire, it douses it.
+ *
+ * When fire contacts wood, it sets it alight.
+ *
+ */
+
 
 void Grid::updateTexture( SDL_Texture* texture ) const {
     void* pixels;
