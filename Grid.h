@@ -37,6 +37,8 @@ private:
 
     // Returns the state at a position, or -1 if it's outside of bounds.
     char getStateSafely( int x, int y ) const;
+
+    char getStateSafely(int index) const;
 };
 
 

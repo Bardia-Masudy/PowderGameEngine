@@ -20,9 +20,22 @@ void Grid::setCell( int x, int y, char state, int radius ) const {
     }
 }
 
-Grid* Grid::nextGrid() {
-    return this;
-    // TODO: implement pixel rules
+Grid* Grid::nextGrid() { // TODO: implement pixel rules.
+    auto nextGrid = new Grid(width, height);
+
+    for (int i = 0; i < width * height; i++) {
+        if (getStateSafely(i - width) == 3 && gridData[i].state == 0) {
+            nextGrid->gridData[i].state = 3;
+        } else if (getStateSafely(i + width) == 0 && gridData[i].state == 3) {
+            nextGrid->gridData[i].state = 0;
+        } else if (getStateSafely(i + width + 1) == 0 && gridData[i].state == 0) {
+
+        } else {
+            nextGrid->gridData[i].state = gridData[i].state;
+        }
+    }
+
+    return nextGrid;
 }
 
 void Grid::updateTexture( SDL_Texture* texture ) const {
@@ -47,11 +60,11 @@ void Grid::updateTexture( SDL_Texture* texture ) const {
 }
 
 char Grid::getStateSafely( int x, int y ) const {
-    int i = x + y * width;
-
-    if (i > 0 && i < width * height) {
+    if (int i = x + y * width; i > 0 && i < width * height)
         return gridData[i].state;
-    } else {
-        return -1;
-    }
+    return -1;
+}
+
+char Grid::getStateSafely( int index ) const {
+    return getStateSafely( index % width, index / width );
 }

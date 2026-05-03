@@ -30,7 +30,9 @@ int main( int argc, char* args[] ) {
 
         while (quit == false) {
             // Update grid
-            currGrid = currGrid->nextGrid();
+            Grid* newGrid = currGrid->nextGrid();
+            std::swap(currGrid, newGrid);
+            delete newGrid;
 
             // Get event data
             while ( SDL_PollEvent( &e ) == true ) {
