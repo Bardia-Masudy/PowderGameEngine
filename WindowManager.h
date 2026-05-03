@@ -3,8 +3,6 @@
 
 #include <SDL3/SDL.h>
 
-#include "LTexture.h"
-
 /* Constants */
 // Screen Constants
 constexpr int SCREEN_WIDTH{ 640 };

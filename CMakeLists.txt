@@ -28,8 +28,7 @@ add_executable(roguefun main.cpp
         LTexture.h
         Grid.cpp
         Grid.h
-        Cursor.cpp
-        Cursor.h)
+)
 #add_executable(mygame WIN32 mygame.c)
 
 # Link to the actual SDL3 library.

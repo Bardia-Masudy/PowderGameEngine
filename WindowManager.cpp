@@ -5,8 +5,6 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
 
-#include "LTexture.h"
-
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 // LTexture gUpTexture, gDownTexture, gLeftTexture, gRightTexture, gCursorTexture;
