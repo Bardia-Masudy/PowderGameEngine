@@ -5,8 +5,8 @@
 
 /* Constants */
 // Screen Constants
-constexpr int SCREEN_WIDTH{ 640 };
-constexpr int SCREEN_HEIGHT{ 480 };
+constexpr int SCREEN_WIDTH{640};
+constexpr int SCREEN_HEIGHT{480};
 
 /* Functions */
 // Starts up SDL, and creates the window.
@@ -17,9 +17,9 @@ void closeSDL();
 
 /* Global Vars */
 // The window being rendered to.
-extern SDL_Window* gWindow;
+extern SDL_Window *gWindow;
 
 // The game window renderer.
-extern SDL_Renderer* gRenderer;
+extern SDL_Renderer *gRenderer;
 
 #endif //ROGUEFUN_ROGUEFUN_H
