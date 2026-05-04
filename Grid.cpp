@@ -18,25 +18,62 @@ void Grid::setCell(int x, int y, char state, int radius) const {
     }
 }
 
-Grid* Grid::nextGrid() { // TODO: implement pixel rules.
-    auto nextGrid = new Grid(width, height);
+Grid* Grid::nextGrid() const { // TODO: implement pixel rules.
+    const auto nextGrid = new Grid(width, height);
+
+
 
     for (int i = width * height - 1; i > 0; i--) {
-        char vicinity[9] = {
-            getStateSafely(i - width - 1),
-            getStateSafely(i - width),
-            getStateSafely(i - width + 1),
-            getStateSafely(i - 1),
-            getStateSafely(i),
-            getStateSafely(i + 1),
-            getStateSafely(i + width - 1),
-            getStateSafely(i + width),
-            getStateSafely(i + width + 1),
-        };
+        char* vicinity[9];
+        vicinity[0] = &gridData[i - width - 1].state;
+        vicinity[1] = &gridData[i - width    ].state;
+        vicinity[2] = &gridData[i - width + 1].state;
+        vicinity[3] = &gridData[i         - 1].state;
+        vicinity[4] = &gridData[i            ].state;
+        vicinity[5] = &gridData[i         + 1].state;
+        vicinity[6] = &gridData[i + width - 1].state;
+        vicinity[7] = &gridData[i + width    ].state;
+        vicinity[8] = &gridData[i + width + 1].state;
+        SDL_Thread *thread = SDL_CreateThread(getNextState, "thread", vicinity);
+
         nextGrid->gridData[i].state = getNextState(vicinity);
     }
 
     return nextGrid;
+}
+
+//(aka int(*)(void *data))
+
+int Grid::getNextState(void* vicinity) {
+    switch (vicinity[4]) {
+        case 0:
+            if (vicinity[1] == 3)
+                return 3;
+            if (vicinity[0] == 3 && vicinity[3] != 0)
+                return 3;
+            if (vicinity[2] == 3 && vicinity[5] != 0)
+                return 3;
+            return 0;
+            break;
+        case 1: // Wood
+            return 1;
+            break;
+        case 2: // Fire
+            return 2;
+            break;
+        case 3: // Water
+            if (vicinity[7] == 0)
+                return 0;
+            if (vicinity[8] == 0 && vicinity[7] != 0)
+                return 0;
+            if (vicinity[6] == 0 && vicinity[7] != 0)
+                return 0;
+            return 3;
+            break;
+        default:
+            return 0;
+            break;
+    }
 }
 
 void Grid::updateTexture(SDL_Texture *texture) const {
