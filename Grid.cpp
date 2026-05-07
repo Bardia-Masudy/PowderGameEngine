@@ -27,7 +27,7 @@ Grid* Grid::nextGrid() const { // TODO: implement pixel rules.
 
     SDL_Thread** threads = new SDL_Thread* [numThreads];
 
-    for (int t = 0; t < numThreads; t++) {
+    for (int t = numThreads - 1; t > 0; t--) {
         int start = (total * t) / numThreads;
         int end = (total * (t+1)) / numThreads;
         auto* data = new ThreadData{start, end, this, next};
@@ -44,23 +44,31 @@ Grid* Grid::nextGrid() const { // TODO: implement pixel rules.
 int Grid::getNextState(void* data) {
     auto* d = static_cast<ThreadData*>(data);
     for (int i = d->startIndex; i < d->endIndex; i++) {
+        char state = AIR;
         switch (d->grid->getStateSafely(i)) {
-            case 0:
-                d->nextGrid->gridData[i].state = 0;
+            case AIR:
+                if (d->grid->getStateSafely(i - d->grid->getWidth()) == WATER)
+                    state = WATER;
+                else
+                    state = AIR;
                 break;
-            case 1: // Wood
-                d->nextGrid->gridData[i].state = 1;
+            case WOOD: // Wood
+                state = WOOD;
                 break;
-            case 2: // Fire
-                d->nextGrid->gridData[i].state = 2;
+            case FIRE: // Fire
+                state = FIRE;
                 break;
-            case 3: // Water
-                d->nextGrid->gridData[i].state = 3;
+            case WATER: // Water
+                if (d->grid->getStateSafely(i + d->grid->getWidth()) == AIR)
+                    state = AIR;
+                else
+                    state = WATER;
                 break;
             default:
-                d->nextGrid->gridData[i].state = 0;
+                state = AIR;
                 break;
         }
+        d->nextGrid->gridData[i].state = state;
     }
     delete d;
     return 0;
@@ -77,10 +85,10 @@ void Grid::updateTexture(SDL_Texture *texture) const {
         for (int i = 0; i < width * height; i++) {
             // Map state to colors (RGBA8888)
             char s = gridData[i].state;
-            if (s == 1)      dest[i] = 0x663300FF; // Wood
-            else if (s == 2) dest[i] = 0xff0000FF; // Fire
-            else if (s == 3) dest[i] = 0x33ccffFF; // Water
-            else             dest[i] = 0xFFFFFFFF; // White / Background
+            if (s == WOOD)          dest[i] = 0x663300FF;
+            else if (s == FIRE)     dest[i] = 0xff0000FF;
+            else if (s == WATER)    dest[i] = 0x33ccffFF;
+            else                    dest[i] = 0xFFFFFFFF;
         }
 
         SDL_UnlockTexture(texture);
@@ -90,7 +98,7 @@ void Grid::updateTexture(SDL_Texture *texture) const {
 char Grid::getStateSafely( int index ) const {
     if (index > 0 && index < width * height)
         return gridData[index].state;
-    return -1;
+    return BORDER;
 }
 
 int Grid::getWidth() const { return width; }

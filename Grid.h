@@ -48,6 +48,14 @@ private:
         Grid* nextGrid;
     } ThreadData;
 
+    enum Material {
+        AIR = 0,
+        WOOD = 1,
+        WATER = 2,
+        FIRE = 3,
+        BORDER = 255
+    };
+
     int width, height;
 
     // 1D array of cells
