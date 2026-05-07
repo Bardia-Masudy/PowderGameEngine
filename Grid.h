@@ -21,7 +21,7 @@ public:
     void setCell(int x, int y, char state, int radius) const;
 
     // Given state of pixel and its neighbours,
-    static int getNextState(void* vicinity) ;
+    static int getNextState(void* target) ;
 
     // Generates a new grid following established rules for each pixel and deletes this one.
     Grid *nextGrid() const;
@@ -29,20 +29,29 @@ public:
     // Converts Grid to SDLSurface of given dimensions.
     void updateTexture(SDL_Texture *) const;
 
+    int getWidth() const;
+    int getHeight() const;
+
+    // Returns the state at a position, or -1 if it's outside of bounds.
+    char getStateSafely(int index) const;
+
 private:
     // Cell def, stores bitwise info regarding its state.
     typedef struct Cell {
         char state = 0;
     } Cell;
 
+    typedef struct ThreadData {
+        int startIndex;
+        int endIndex;
+        const Grid* grid;
+        Grid* nextGrid;
+    } ThreadData;
+
     int width, height;
 
     // 1D array of cells
     Cell *gridData;
-
-    // Returns the state at a position, or -1 if it's outside of bounds.
-    char getStateSafely(int x, int y) const;
-    char getStateSafely(int index) const;
 };
 
 
