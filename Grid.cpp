@@ -20,7 +20,7 @@ void Grid::setCell(int x, int y, char state, int radius) const {
     }
 }
 
-Grid* Grid::nextGrid() const { // TODO: implement pixel rules.
+Grid* Grid::nextGrid() const {
     const auto next = new Grid(width, height);
     int numThreads = SDL_GetNumLogicalCPUCores();
     int total = width * height;
@@ -41,6 +41,20 @@ Grid* Grid::nextGrid() const { // TODO: implement pixel rules.
     return next;
 }
 
+//TODO: Move to per-cell behaviour checking (using alternating-regioned threads) to fix current race conditions.
+//          - Base simulation on current grid and update in place.
+//          - Publicize Grid Cell defn, and seperate Cell logic from Grid. Make grid resp. for simulation calls only.
+//          - Each frame, split sim space into a grid of chunks of predetermined size.
+//          - Alternate offset of chunking so that each frame's chunks are centered on the corner intersection of prev.
+//          - When simulating a chunk, only allow interactions and movement within that chunk.
+//              - Chunks can be run in parallel now, but within each chunk particles can have seeded stochastic behavr.
+//TODO: Add generalized velocity instead of hardcoded gravity swapping/spreading.
+//          - Each cell has v. and h. velocity, calculate movement through fast marching.
+//          - Convert excess velocity into (seeded random) "splashing" velocity, for incident and impacted particle,
+//              based on density value/ratio.
+//          - Implement gravity as global downwards force for applicable particles
+//              - Add in static friction to prevent constant "sliding" from prev. splashing velocity.
+//TODO: Implement fire/wood behaviour, and other generalized particle components.
 int Grid::getNextState(void* data) {
     auto* d = static_cast<ThreadData*>(data);
     for (int i = d->startIndex; i < d->endIndex; i++) {
