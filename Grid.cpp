@@ -14,7 +14,7 @@ void Grid::setCell(int x, int y, char state, int radius) const {
                 int newX = x + xDiff;
                 int newY = y + yDiff;
                 if (getStateSafely(newX + width * newY) != -1)
-                    gridData[newX + newY * width].state = state;
+                    gridData[newX + newY * width].mat = state;
             }
         }
     }
@@ -27,7 +27,7 @@ Grid* Grid::nextGrid() const { // TODO: implement pixel rules.
 
     SDL_Thread** threads = new SDL_Thread* [numThreads];
 
-    for (int t = numThreads - 1; t > 0; t--) {
+    for (int t = 0; t < numThreads; t++) {
         int start = (total * t) / numThreads;
         int end = (total * (t+1)) / numThreads;
         auto* data = new ThreadData{start, end, this, next};
@@ -46,29 +46,51 @@ int Grid::getNextState(void* data) {
     for (int i = d->startIndex; i < d->endIndex; i++) {
         char state = AIR;
         switch (d->grid->getStateSafely(i)) {
-            case AIR:
-                if (d->grid->getStateSafely(i - d->grid->getWidth()) == WATER)
+            case AIR: {
+                int w = d->grid->getWidth();
+                // Water fell from above
+                if (d->grid->getStateSafely(i - w) == WATER)
+                    state = WATER;
+                // Water spread from right: right neighbor is water that can't fall
+                else if (d->grid->getStateSafely(i + 1 - w) == WATER &&
+                         d->grid->getStateSafely(i + 1) != AIR &&
+                         i % 2 == 0)
+                    state = WATER;
+                // Water spread from left: left neighbor is water that can't fall
+                else if (d->grid->getStateSafely(i - 1 - w) == WATER &&
+                         d->grid->getStateSafely(i - 1) != AIR &&
+                         i % 2 == 1)
                     state = WATER;
                 else
                     state = AIR;
                 break;
-            case WOOD: // Wood
+            }
+            case WOOD:
                 state = WOOD;
                 break;
-            case FIRE: // Fire
+            case FIRE:
                 state = FIRE;
                 break;
-            case WATER: // Water
-                if (d->grid->getStateSafely(i + d->grid->getWidth()) == AIR)
+            case WATER: {
+                int w = d->grid->getWidth();
+                // Falls straight down
+                if (d->grid->getStateSafely(i + w) == AIR)
+                    state = AIR;
+                // Spreads left
+                else if (d->grid->getStateSafely(i - 1 + w) == AIR)
+                    state = AIR;
+                // Spreads right
+                else if (d->grid->getStateSafely(i + 1 + w) == AIR)
                     state = AIR;
                 else
                     state = WATER;
                 break;
+            }
             default:
                 state = AIR;
                 break;
         }
-        d->nextGrid->gridData[i].state = state;
+        d->nextGrid->gridData[i].mat = state;
     }
     delete d;
     return 0;
@@ -84,7 +106,7 @@ void Grid::updateTexture(SDL_Texture *texture) const {
 
         for (int i = 0; i < width * height; i++) {
             // Map state to colors (RGBA8888)
-            char s = gridData[i].state;
+            char s = gridData[i].mat;
             if (s == WOOD)          dest[i] = 0x663300FF;
             else if (s == FIRE)     dest[i] = 0xff0000FF;
             else if (s == WATER)    dest[i] = 0x33ccffFF;
@@ -97,7 +119,7 @@ void Grid::updateTexture(SDL_Texture *texture) const {
 
 char Grid::getStateSafely( int index ) const {
     if (index > 0 && index < width * height)
-        return gridData[index].state;
+        return gridData[index].mat;
     return BORDER;
 }
 

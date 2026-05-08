@@ -36,9 +36,14 @@ public:
     char getStateSafely(int index) const;
 
 private:
-    // Cell def, stores bitwise info regarding its state.
+    // Cell def, stores info regarding its state.
     typedef struct Cell {
-        char state = 0;
+        char mat = 0;
+        char empty1 = 0;
+        char empty2 = 0;
+        char empty3 = 0;
+        float spd = 0; // use both of
+        float dir = 0;
     } Cell;
 
     typedef struct ThreadData {
