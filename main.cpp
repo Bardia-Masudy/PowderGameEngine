@@ -1,8 +1,8 @@
 #include <iostream>
 #include <memory>
 
-#include "Grid.h"
-#include "WindowManager.h"
+#include "simulator/Grid.h"
+#include "render/WindowManager.h"
 
 int main(int argc, char *args[]) {
     // Final exit code
@@ -21,8 +21,8 @@ int main(int argc, char *args[]) {
         SDL_zero(e);
 
         auto currGrid = new Grid(SCREEN_WIDTH, SCREEN_HEIGHT);
-        char material = 1;
         bool isMouseDown = false;
+        int material = 0;
 
         SDL_Texture *gridTexture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_ABGR32,
                                                      SDL_TEXTUREACCESS_STREAMING,
@@ -30,9 +30,7 @@ int main(int argc, char *args[]) {
 
         while (quit == false) {
             // Update grid
-            Grid* newGrid = currGrid->nextGrid();
-            std::swap(currGrid, newGrid);
-            delete newGrid;
+            currGrid->step();
 
             // Get event data
             while (SDL_PollEvent(&e) == true) {
@@ -48,12 +46,12 @@ int main(int argc, char *args[]) {
                     } else if (e.key.key == SDLK_4) {
                         material = 3; // Water
                     }
-                    // TODO: Known bug, mouse x coordinate wraps off of the edge.
+                    // TODO: Known bug, mouse x coordinate wraps off of the edge due to array behaviour.
                 } else if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN || (e.type == SDL_EVENT_MOUSE_MOTION && isMouseDown)) {
                     isMouseDown = true;
                     float mouseX = -1.f, mouseY = -1.f;
                     SDL_GetMouseState(&mouseX, &mouseY);
-                    currGrid->setCell(static_cast<int>(mouseX), static_cast<int>(mouseY), material, 4);
+                    currGrid->setCell(static_cast<int>(mouseX), static_cast<int>(mouseY), material, 20);
                 } else if (e.type == SDL_EVENT_MOUSE_BUTTON_UP) {
                     isMouseDown = false;
                 }

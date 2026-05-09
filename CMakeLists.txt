@@ -22,12 +22,16 @@ endif()
 
 # Create your game executable target as usual
 add_executable(roguefun main.cpp
-        WindowManager.h
-        WindowManager.cpp
-        LTexture.cpp
-        LTexture.h
-        Grid.cpp
-        Grid.h
+        render/WindowManager.h
+        render/WindowManager.cpp
+        render/LTexture.cpp
+        render/LTexture.h
+        simulator/Grid.cpp
+        simulator/Grid.h
+        materials/Cell.h
+        simulator/Chunk.cpp
+        simulator/Chunk.h
+        materials/Cell.cpp
 )
 #add_executable(mygame WIN32 mygame.c)
 
