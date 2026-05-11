@@ -1,6 +1,5 @@
 #ifndef ROGUEFUN_CELL_H
 #define ROGUEFUN_CELL_H
-#include <functional>
 #include <SDL3/SDL_stdinc.h>
 
 #include "../simulator/Chunk.h"
@@ -36,6 +35,7 @@ private:
     int vSpeed;
     int hSpeed;
     Uint32 baseColour;
+    int steppedFrame{-1};
 };
 
 

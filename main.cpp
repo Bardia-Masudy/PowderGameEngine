@@ -20,7 +20,7 @@ int main(int argc, char *args[]) {
         SDL_Event e;
         SDL_zero(e);
 
-        auto currGrid = new Grid(SCREEN_WIDTH, SCREEN_HEIGHT);
+        auto grid = new Grid(SCREEN_WIDTH, SCREEN_HEIGHT);
         bool isMouseDown = false;
         int material = 0;
 
@@ -30,7 +30,7 @@ int main(int argc, char *args[]) {
 
         while (quit == false) {
             // Update grid
-            currGrid->step();
+            grid->step();
 
             // Get event data
             while (SDL_PollEvent(&e) == true) {
@@ -51,13 +51,13 @@ int main(int argc, char *args[]) {
                     isMouseDown = true;
                     float mouseX = -1.f, mouseY = -1.f;
                     SDL_GetMouseState(&mouseX, &mouseY);
-                    currGrid->setCell(static_cast<int>(mouseX), static_cast<int>(mouseY), material, 20);
+                    grid->setCell(static_cast<int>(mouseX), static_cast<int>(mouseY), material, 5);
                 } else if (e.type == SDL_EVENT_MOUSE_BUTTON_UP) {
                     isMouseDown = false;
                 }
             }
 
-            currGrid->updateTexture(gridTexture);
+            grid->updateTexture(gridTexture);
 
             SDL_RenderClear(gRenderer);
             SDL_RenderTexture(gRenderer, gridTexture, nullptr, nullptr);

@@ -6,7 +6,7 @@ class Grid;
 // Responsible for stepping a region of Cells on its Grid in a parallelizable manner.
 class Chunk {
 public:
-    Chunk(int x, int y, int width, int height, const Grid* grid);
+    Chunk(int x, int y, int width, int height, Grid* grid);
 
     Chunk() = delete;
 
@@ -21,11 +21,13 @@ public:
     // Calls step() on each pixel in this Chunk.
     void step() const;
 
-    bool contains(int x, int y) const;
+    bool isVisible(int x, int y) const;
+
+    void jitter();
 
 private:
-    const Grid* grid;
-    int xMin, yMin, width, height;
+    Grid* grid;
+    int offset, xMin, yMin, width, height;
 };
 
 

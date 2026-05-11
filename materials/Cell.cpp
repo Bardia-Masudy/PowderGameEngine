@@ -8,8 +8,11 @@ Cell::Cell(int x, int y, Grid *grid) : x{x}, y{y}, grid{grid} {
 }
 
 void Cell::step(const Chunk *chunk) {
+    if (int currentFrame = grid->getCurrentFrame(); steppedFrame == currentFrame) return;
+    else steppedFrame = currentFrame;
+
     //TODO: do movement and other interactions.
-    if (gravity != 0 && chunk->contains(x, y + 1) && grid->getCell(x, y + 1) != nullptr) {
+    if (gravity != 0 && chunk->isVisible(x, y + 1) && grid->getCell(x, y + 1) != nullptr) {
         int myX = x, myY = y;
         Cell* below = grid->getCell(x, y + 1);
         std::swap(*this, *below);

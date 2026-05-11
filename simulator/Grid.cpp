@@ -5,13 +5,24 @@
 #include <vector>
 #include <SDL3/SDL_cpuinfo.h>
 
-#include "Chunk.h"
-
 Grid::Grid(int width, int height) : width{width}, height{height} {
     gridData.reserve(width * height);
     for (int i = 0; i < width * height; i++) {
         gridData.emplace_back(i % width, i / width, this);
     }
+
+    int numThreads = SDL_GetNumLogicalCPUCores();
+    int sideCount = static_cast<int>(std::ceil(std::sqrt(numThreads))) + 1;
+    int chunkWidth = width / (sideCount - 1);
+    int chunkHeight = height / (sideCount - 1);
+
+    for (int t = 0; t < sideCount * sideCount; t++) {
+        int cx = chunkWidth * (t % sideCount);
+        int cy = chunkHeight * (t / sideCount);
+        chunks.emplace_back(cx, cy, chunkWidth, chunkHeight, this);
+    }
+
+    initThreadPool();
 }
 
 void Grid::setCell(int x, int y, int material, int radius) {
@@ -30,32 +41,18 @@ void Grid::setCell(int x, int y, int material, int radius) {
     }
 }
 
-void Grid::step() const {
-    int numThreads = SDL_GetNumLogicalCPUCores();
-    int sideCount = static_cast<int>(std::ceil(std::sqrt(numThreads))) + 1;
-    int totalChunks = sideCount * sideCount;
-
-    std::vector<Chunk> chunks;
-    std::vector<ThreadData> threadDatas;
-    std::vector<SDL_Thread*> threads(totalChunks);
-
-    chunks.reserve(totalChunks);
-    threadDatas.reserve(totalChunks);
-
-    for (int t = 0; t < totalChunks; t++) {
-        int chunkWidth = width / (sideCount - 1);
-        int chunkHeight = height / (sideCount - 1);
-        int x = chunkWidth * (t % sideCount);
-        int y = chunkHeight * (t / sideCount);
-
-        chunks.emplace_back(x, y, chunkWidth, chunkHeight, this);
-        threadDatas.push_back({this, &chunks.back()});
-        threads[t] = SDL_CreateThread(getNextState, "simthread", &threadDatas.back());
+void Grid::step() {
+    {
+        std::lock_guard lock(poolMutex);
+        pendingChunks = static_cast<int>(chunks.size());
+        ++frameCount;
+        frameCount %= 100;
     }
 
-    for (int t = 0; t < totalChunks; t++)
-        SDL_WaitThread(threads[t], nullptr);
-    //TODO: check memory leakage for vectors.
+    workReady.notify_all();
+
+    std::unique_lock lock(poolMutex);
+    workDone.wait(lock, [this] { return pendingChunks == 0; });
 }
 
 //TODO: Move to per-cell behaviour checking (using alternating-regioned threads) to fix current race conditions.
@@ -73,17 +70,46 @@ void Grid::step() const {
 //              - Add in static friction to prevent constant "sliding" from prev. splashing velocity.
 //                  - Maybe using a "stopped" flag that gets updated by collision/movement or updates nearby
 //TODO: Implement fire/wood behaviour, and other generalized particle components.
-int Grid::getNextState(void* data) {
-    const auto* d = static_cast<ThreadData*>(data);
-    d->chunk->step();
-    return 0;
+
+void Grid::processThread(int chunkIndex) {
+    int lastFrame = 0;
+
+    while (true) {
+        std::unique_lock lock(poolMutex);
+        workReady.wait(lock, [this, lastFrame] { return stopPool || frameCount != lastFrame; });
+        if (stopPool)
+            return;
+        lastFrame = frameCount;
+        lock.unlock();
+
+        chunks[chunkIndex].jitter();
+        chunks[chunkIndex].step();
+
+        lock.lock();
+        if (--pendingChunks == 0)
+            workDone.notify_one();
+    }
+}
+
+void Grid::initThreadPool() {
+    threadPool.reserve(chunks.size());
+    for (int i = 0; i < static_cast<int>(chunks.size()); i++)
+        threadPool.emplace_back(&Grid::processThread, this, i);
+}
+
+Grid::~Grid() {
+    {
+        std::lock_guard lock(poolMutex);
+        stopPool = true;
+    }
+    workReady.notify_all();
+    for (auto& t : threadPool) t.join();
 }
 
 void Grid::updateTexture(SDL_Texture *texture) const {
     void *pixels;
     int pitch;
 
-    // Lock texture to get a direct pointer to write to
     if (SDL_LockTexture(texture, nullptr, &pixels, &pitch) == 1) {
         Uint32 *dest = static_cast<Uint32 *>(pixels);
 
@@ -94,13 +120,12 @@ void Grid::updateTexture(SDL_Texture *texture) const {
     }
 }
 
-Cell *Grid::getCell(int x, int y) const {
-    try {
-        return const_cast<Cell*>(&gridData.at(x + y * width));
-    } catch (std::out_of_range& e) {
+Cell *Grid::getCell(int x, int y) {
+    if (x < 0 || x >= width || y < 0 || y >= height)
         return nullptr;
-    }
+    return &gridData.at(x + y * width);
 }
 
 int Grid::getWidth() const { return width; }
 int Grid::getHeight() const { return height; }
+int Grid::getCurrentFrame() const { return frameCount; }
