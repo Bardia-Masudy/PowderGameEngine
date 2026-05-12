@@ -21,7 +21,6 @@ int main(int argc, char *args[]) {
         SDL_zero(e);
 
         auto grid = new Grid(SCREEN_WIDTH, SCREEN_HEIGHT);
-        bool isMouseDown = false;
         int material = 0;
 
         SDL_Texture *gridTexture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_ABGR32,
@@ -34,6 +33,15 @@ int main(int argc, char *args[]) {
 
             // Get event data
             while (SDL_PollEvent(&e) == true) {
+                // Handle mouse events
+                float mouseX = -1.f, mouseY = -1.f;
+                SDL_MouseButtonFlags mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+                if (mouseState & SDL_BUTTON_LMASK) {
+                    grid->setCell(static_cast<int>(mouseX), static_cast<int>(mouseY), material, 5);
+                } // TODO: Known bug, mouse x coordinate wraps off of the edge due to array formate.
+
+
+                // Handle keyboard events
                 if (e.type == SDL_EVENT_QUIT) {
                     quit = true;
                 } else if (e.type == SDL_EVENT_KEY_DOWN) {
@@ -46,14 +54,6 @@ int main(int argc, char *args[]) {
                     } else if (e.key.key == SDLK_4) {
                         material = 3; // Water
                     }
-                    // TODO: Known bug, mouse x coordinate wraps off of the edge due to array behaviour.
-                } else if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN || (e.type == SDL_EVENT_MOUSE_MOTION && isMouseDown)) {
-                    isMouseDown = true;
-                    float mouseX = -1.f, mouseY = -1.f;
-                    SDL_GetMouseState(&mouseX, &mouseY);
-                    grid->setCell(static_cast<int>(mouseX), static_cast<int>(mouseY), material, 5);
-                } else if (e.type == SDL_EVENT_MOUSE_BUTTON_UP) {
-                    isMouseDown = false;
                 }
             }
 
