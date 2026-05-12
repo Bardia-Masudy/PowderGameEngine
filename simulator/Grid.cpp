@@ -1,7 +1,6 @@
 #include "Grid.h"
 
 #include <cmath>
-#include <stdexcept>
 #include <vector>
 #include <SDL3/SDL_cpuinfo.h>
 
@@ -9,17 +8,6 @@ Grid::Grid(int width, int height) : width{width}, height{height} {
     gridData.reserve(width * height);
     for (int i = 0; i < width * height; i++) {
         gridData.emplace_back(i % width, i / width, this);
-    }
-
-    int numThreads = SDL_GetNumLogicalCPUCores();
-    int sideCount = static_cast<int>(std::ceil(std::sqrt(numThreads))) + 1;
-    int chunkWidth = width / (sideCount - 1);
-    int chunkHeight = height / (sideCount - 1);
-
-    for (int t = 0; t < sideCount * sideCount; t++) {
-        int cx = chunkWidth * (t % sideCount);
-        int cy = chunkHeight * (t / sideCount);
-        chunks.emplace_back(cx, cy, chunkWidth, chunkHeight, this);
     }
 
     initThreadPool();
@@ -42,17 +30,16 @@ void Grid::setCell(int x, int y, int material, int radius) {
 }
 
 void Grid::step() {
-    {
-        std::lock_guard lock(poolMutex);
-        pendingChunks = static_cast<int>(chunks.size());
-        ++frameCount;
-        frameCount %= 100;
+    for (int i = 0; i < 4; i ++) {
+        {
+            std::lock_guard lock(poolMutex);
+            pendingChunks = static_cast<int>(chunks.size());
+            ++frameCount %= 64;
+        }
+        workReady.notify_all();
+        std::unique_lock lock(poolMutex);
+        workDone.wait(lock, [this] { return pendingChunks == 0; });
     }
-
-    workReady.notify_all();
-
-    std::unique_lock lock(poolMutex);
-    workDone.wait(lock, [this] { return pendingChunks == 0; });
 }
 
 //TODO: Move to per-cell behaviour checking (using alternating-regioned threads) to fix current race conditions.
@@ -73,7 +60,6 @@ void Grid::step() {
 
 void Grid::processThread(int chunkIndex) {
     int lastFrame = 0;
-
     while (true) {
         std::unique_lock lock(poolMutex);
         workReady.wait(lock, [this, lastFrame] { return stopPool || frameCount != lastFrame; });
@@ -82,7 +68,6 @@ void Grid::processThread(int chunkIndex) {
         lastFrame = frameCount;
         lock.unlock();
 
-        chunks[chunkIndex].jitter();
         chunks[chunkIndex].step();
 
         lock.lock();
@@ -92,9 +77,20 @@ void Grid::processThread(int chunkIndex) {
 }
 
 void Grid::initThreadPool() {
-    threadPool.reserve(chunks.size());
-    for (int i = 0; i < static_cast<int>(chunks.size()); i++)
-        threadPool.emplace_back(&Grid::processThread, this, i);
+    int numThreads = SDL_GetNumLogicalCPUCores();
+    int sideCount = static_cast<int>(std::ceil(std::sqrt(numThreads)));
+    int chunkWidth = width / (sideCount);
+    int chunkHeight = height / (sideCount);
+
+    for (int y = 0; y < sideCount; y++) {
+        for (int x = 0; x < sideCount; x++) {
+            int cx = chunkWidth * x;
+            int cy = chunkHeight * y;
+            int offset = ((x & 1) ? 2 : 0) + ((y & 1) ? 1 : 0);
+            chunks.emplace_back(cx, cy, chunkWidth, chunkHeight, offset, this);
+            threadPool.emplace_back(&Grid::processThread, this, x + y * sideCount);
+        }
+    }
 }
 
 Grid::~Grid() {
@@ -103,7 +99,8 @@ Grid::~Grid() {
         stopPool = true;
     }
     workReady.notify_all();
-    for (auto& t : threadPool) t.join();
+    for (auto& t : threadPool)
+        t.join();
 }
 
 void Grid::updateTexture(SDL_Texture *texture) const {

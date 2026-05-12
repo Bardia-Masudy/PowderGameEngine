@@ -47,6 +47,7 @@ int main(int argc, char *args[]) {
                 } else if (e.type == SDL_EVENT_KEY_DOWN) {
                     if (e.key.key == SDLK_1) {
                         material = 0; // White
+                        grid->step();
                     } else if (e.key.key == SDLK_2) {
                         material = 1; // Wood
                     } else if (e.key.key == SDLK_3) {

@@ -69,8 +69,8 @@ void Cell::collideCells(Cell *other) {
     if (hSpeed != 0 && x != other->x) {
         float momentum = hSpeed / 2;
 
-        other->hSpeed += orientVector(std::abs(momentum), other->hSpeed, steppedFrame & 1);
-        vSpeed += orientVector(std::abs(momentum), vSpeed, steppedFrame & 1);
+        other->hSpeed += orientVector(std::abs(momentum), other->hSpeed, steppedFrame >> 2 & 1);
+        vSpeed += orientVector(std::abs(momentum), vSpeed, steppedFrame >> 2 & 1);
         hSpeed = 0;
 
 
@@ -78,8 +78,8 @@ void Cell::collideCells(Cell *other) {
     if (vSpeed != 0 && y != other->y) {
         float momentum = vSpeed / 2;
 
-        other->vSpeed += orientVector(std::abs(momentum), other->vSpeed, steppedFrame & 1);
-        hSpeed += orientVector(std::abs(momentum), hSpeed, steppedFrame & 1);
+        other->vSpeed += orientVector(std::abs(momentum), other->vSpeed, steppedFrame >> 2 & 1);
+        hSpeed += orientVector(std::abs(momentum), hSpeed, steppedFrame >> 2 & 1);
         vSpeed = 0;
 
     }
