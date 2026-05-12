@@ -33,7 +33,7 @@ void Grid::setCell(int x, int y, int material, int radius) {
                 int newY = y + yDiff;
                 if (getCell(newX, newY) != nullptr) {
                     Cell *newCell = &gridData.at(newX + newY * width);
-                    newCell->setIndex(newX, newY);
+                    newCell->setPosition(newX, newY);
                     newCell->setMaterial(Cell::WATER);
                 }
             }
