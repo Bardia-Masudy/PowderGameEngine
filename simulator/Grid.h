@@ -33,8 +33,6 @@ public:
     // Converts Grid to SDLSurface of given dimensions.
     void updateTexture(SDL_Texture *) const;
 
-    int getWidth() const;
-    int getHeight() const;
     int getCurrentFrame() const;
 
     // Returns the cell at a position, or nullptr if outside bounds.
@@ -59,6 +57,7 @@ private:
     bool stopPool{false};
 
     void processThread(int chunkIndex);
+
     void initThreadPool();
 };
 

@@ -29,7 +29,7 @@ void Cell::step(const Chunk *chunk) {
 // Attempts to move the pixel along less dense space with given vertical and horizontal speeds.
 // Inspired by Alois Zingl's page "The Beauty of Bresenham's Algorithm".
 void Cell::attemptMove(int hDist, int vDist, const Chunk *chunk) {
-    int dx =  std::abs(hDist), sx = (hDist >= 0) ? 1 : -1;
+    int dx = std::abs(hDist), sx = (hDist >= 0) ? 1 : -1;
     int dy = -std::abs(vDist), sy = (vDist >= 0) ? 1 : -1;
     int err = dx + dy, newX = x, newY = y, e2;
 
@@ -37,8 +37,11 @@ void Cell::attemptMove(int hDist, int vDist, const Chunk *chunk) {
         if (hSpeed == 0 && vSpeed == 0) { break; }
         e2 = 2 * err;
         if (e2 <= dx) {
-            Cell* target = grid->getCell(newX, newY + sy);
-            if (!chunk->isVisible(newX, newY + sy) || target == nullptr) { vSpeed = 0; break; }
+            Cell *target = grid->getCell(newX, newY + sy);
+            if (!chunk->isVisible(newX, newY + sy) || target == nullptr) {
+                vSpeed = 0;
+                break;
+            }
             if (target != this && target->density >= density) {
                 swapCells(newX, newY);
                 return collideCells(target);
@@ -49,8 +52,11 @@ void Cell::attemptMove(int hDist, int vDist, const Chunk *chunk) {
             newY += sy;
         }
         if (e2 >= dy) {
-            Cell* target = grid->getCell(newX + sx, newY);
-            if (!chunk->isVisible(newX + sx, newY) || target == nullptr) { hSpeed = 0; break; }
+            Cell *target = grid->getCell(newX + sx, newY);
+            if (!chunk->isVisible(newX + sx, newY) || target == nullptr) {
+                hSpeed = 0;
+                break;
+            }
             if (target != this && target->density >= density) {
                 swapCells(newX, newY);
                 return collideCells(target);
@@ -72,8 +78,6 @@ void Cell::collideCells(Cell *other) {
         other->hSpeed += orientVector(std::abs(momentum), other->hSpeed, steppedFrame >> 2 & 1);
         vSpeed += orientVector(std::abs(momentum), vSpeed, steppedFrame >> 2 & 1);
         hSpeed = 0;
-
-
     }
     if (vSpeed != 0 && y != other->y) {
         float momentum = vSpeed / 2;
@@ -81,7 +85,6 @@ void Cell::collideCells(Cell *other) {
         other->vSpeed += orientVector(std::abs(momentum), other->vSpeed, steppedFrame >> 2 & 1);
         hSpeed += orientVector(std::abs(momentum), hSpeed, steppedFrame >> 2 & 1);
         vSpeed = 0;
-
     }
 }
 
@@ -94,7 +97,7 @@ int Cell::orientVector(int added, int comparison, bool flipped) {
 void Cell::swapCells(int newX, int newY) {
     int prevX = x;
     int prevY = y;
-    Cell* target = grid->getCell(newX, newY);
+    Cell *target = grid->getCell(newX, newY);
 
     std::swap(*this, *target);
 

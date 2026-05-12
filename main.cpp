@@ -38,7 +38,7 @@ int main(int argc, char *args[]) {
                 SDL_MouseButtonFlags mouseState = SDL_GetMouseState(&mouseX, &mouseY);
                 if (mouseState & SDL_BUTTON_LMASK) {
                     grid->setCell(static_cast<int>(mouseX), static_cast<int>(mouseY), material, 5);
-                } // TODO: Known bug, mouse x coordinate wraps off of the edge due to array formate.
+                } // TODO: Known bug, mouse x coordinate wraps off of the edge due to array format.
 
 
                 // Handle keyboard events
@@ -47,7 +47,6 @@ int main(int argc, char *args[]) {
                 } else if (e.type == SDL_EVENT_KEY_DOWN) {
                     if (e.key.key == SDLK_1) {
                         material = 0; // White
-                        grid->step();
                     } else if (e.key.key == SDLK_2) {
                         material = 1; // Wood
                     } else if (e.key.key == SDLK_3) {

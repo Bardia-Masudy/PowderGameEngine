@@ -30,7 +30,7 @@ void Grid::setCell(int x, int y, int material, int radius) {
 }
 
 void Grid::step() {
-    for (int i = 0; i < 4; i ++) {
+    for (int i = 0; i < 4; i++) {
         {
             std::lock_guard lock(poolMutex);
             pendingChunks = static_cast<int>(chunks.size());
@@ -99,7 +99,7 @@ Grid::~Grid() {
         stopPool = true;
     }
     workReady.notify_all();
-    for (auto& t : threadPool)
+    for (auto &t: threadPool)
         t.join();
 }
 
@@ -123,6 +123,4 @@ Cell *Grid::getCell(int x, int y) {
     return &gridData.at(x + y * width);
 }
 
-int Grid::getWidth() const { return width; }
-int Grid::getHeight() const { return height; }
 int Grid::getCurrentFrame() const { return frameCount; }
