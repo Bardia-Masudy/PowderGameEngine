@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cstdlib>
 
+#define MAX_VELOCITY 10
+
 Cell::Cell(int x, int y, Grid *grid) : x{x}, y{y}, grid{grid} {
     vSpeed = 0;
     hSpeed = 0;
@@ -13,21 +15,17 @@ void Cell::step(const Chunk *chunk) {
     if (int currentFrame = grid->getCurrentFrame(); steppedFrame == currentFrame) return;
     else steppedFrame = currentFrame;
 
-    int max_velocity = 10;
-
     if (gravity) {
         vSpeed += density * gravity;
     }
 
     if (hSpeed || vSpeed) {
-        hSpeed = std::clamp(hSpeed, -max_velocity, max_velocity);
-        vSpeed = std::clamp(vSpeed, -max_velocity, max_velocity);
+        hSpeed = std::clamp(hSpeed, -MAX_VELOCITY, MAX_VELOCITY);
+        vSpeed = std::clamp(vSpeed, -MAX_VELOCITY, MAX_VELOCITY);
         attemptMove(hSpeed, vSpeed, chunk);
     }
 }
 
-// Attempts to move the pixel along less dense space with given vertical and horizontal speeds.
-// Inspired by Alois Zingl's page "The Beauty of Bresenham's Algorithm".
 void Cell::attemptMove(int hDist, int vDist, const Chunk *chunk) {
     int dx = std::abs(hDist), sx = (hDist >= 0) ? 1 : -1;
     int dy = -std::abs(vDist), sy = (vDist >= 0) ? 1 : -1;
@@ -75,25 +73,23 @@ void Cell::collideCells(Cell *other) {
     if (hSpeed != 0 && x != other->x) {
         float momentum = hSpeed / 2;
 
-        other->hSpeed += orientVector(std::abs(momentum), other->hSpeed, steppedFrame >> 2 & 1);
-        vSpeed += orientVector(std::abs(momentum), vSpeed, steppedFrame >> 2 & 1);
+        other->hSpeed += orientToVector(std::abs(momentum), other->hSpeed, steppedFrame >> 2 & 1);
+        vSpeed += orientToVector(std::abs(momentum), vSpeed, steppedFrame >> 2 & 1);
         hSpeed = 0;
     }
     if (vSpeed != 0 && y != other->y) {
         float momentum = vSpeed / 2;
 
-        other->vSpeed += orientVector(std::abs(momentum), other->vSpeed, steppedFrame >> 2 & 1);
-        hSpeed += orientVector(std::abs(momentum), hSpeed, steppedFrame >> 2 & 1);
+        other->vSpeed += orientToVector(std::abs(momentum), other->vSpeed, steppedFrame >> 2 & 1);
+        hSpeed += orientToVector(std::abs(momentum), hSpeed, steppedFrame >> 2 & 1);
         vSpeed = 0;
     }
 }
 
-int Cell::orientVector(int added, int comparison, bool flipped) {
-    return (flipped) ? (comparison > 0) ? added : -added : (comparison >= 0) ? added : -added;
+int Cell::orientToVector(int magnitude, int vector, bool rand) {
+    return (rand) ? (vector > 0) ? magnitude : -magnitude : (vector >= 0) ? magnitude : -magnitude;
 }
 
-// Swap two cells on the grid, preserving each cell's steppedFrame so neither
-// gets stepped twice nor skipped within the same frame.
 void Cell::swapCells(int newX, int newY) {
     int prevX = x;
     int prevY = y;

@@ -10,6 +10,8 @@ public:
 
     Cell() = delete;
 
+    // Attempts to move the pixel along less dense space with given vertical and horizontal speeds.
+    // Inspired by Alois Zingl's page "The Beauty of Bresenham's Algorithm".
     void attemptMove(int hDist, int vDist, const Chunk *chunk);
 
     // Step cell on its Grid, passing in its Chunk's validation function.
@@ -19,14 +21,19 @@ public:
     // Perform any displacement depending on density, and other cell-specific behaviour.
     void collideCells(Cell *other);
 
+    // Swap two cells on the grid, updating each cell's coordinates accordingly.
     void swapCells(int newX, int newY);
 
+    // Sets the position values of this Cell. Does not override Grid data.
     void setPosition(int x, int y);
 
+    // Return this Cell's colour.
     Uint32 getColour() const;
 
+    // Return whether this Cell should run the step() command.
     bool shouldStep() const;
 
+    // Set the material (and relevant characteristic) of this cell based on given enum.
     void setMaterial(int material);
 
     enum Material {
@@ -46,7 +53,8 @@ private:
     Uint32 baseColour;
     int steppedFrame{-1};
 
-    static int orientVector(int added, int comparison, bool flipped);
+    // Return vector additively scaled by magnitude. Uses rand to break ties.
+    static int orientToVector(int magnitude, int vector, bool rand);
 };
 
 

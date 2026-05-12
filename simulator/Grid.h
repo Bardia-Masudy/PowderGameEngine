@@ -24,15 +24,16 @@ public:
 
     ~Grid();
 
-    // Add pixel at location.
-    void setCell(int x, int y, int material, int radius);
+    // Add a circle of pixels at given location on the Grid, of given material and radius.
+    void setCell(int x, int y, Cell::Material material, int radius);
 
-    // Advances the simulation by one frame.
+    // Advances the simulation by one global frame.
     void step();
 
     // Converts Grid to SDLSurface of given dimensions.
     void updateTexture(SDL_Texture *) const;
 
+    // Returns current (simulator) frame.
     int getCurrentFrame() const;
 
     // Returns the cell at a position, or nullptr if outside bounds.
@@ -44,7 +45,7 @@ private:
     // 1D array of cells
     std::vector<Cell> gridData;
 
-    // Pre-built chunk list, computed once in constructor
+    // Pre-built chunk list.
     std::vector<Chunk> chunks;
 
     // Thread pool
@@ -56,8 +57,10 @@ private:
     int frameCount{0};
     bool stopPool{false};
 
+    // Run the process for a thread. TODO: Skip wrong-offset threads before locking.
     void processThread(int chunkIndex);
 
+    // Initialize the thread pool and chunk vector.
     void initThreadPool();
 };
 

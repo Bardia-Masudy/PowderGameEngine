@@ -21,7 +21,7 @@ int main(int argc, char *args[]) {
         SDL_zero(e);
 
         auto grid = new Grid(SCREEN_WIDTH, SCREEN_HEIGHT);
-        int material = 0;
+        Cell::Material material = Cell::WATER;
 
         SDL_Texture *gridTexture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_ABGR32,
                                                      SDL_TEXTUREACCESS_STREAMING,
@@ -46,13 +46,13 @@ int main(int argc, char *args[]) {
                     quit = true;
                 } else if (e.type == SDL_EVENT_KEY_DOWN) {
                     if (e.key.key == SDLK_1) {
-                        material = 0; // White
+                        material = Cell::AIR; // White
                     } else if (e.key.key == SDLK_2) {
-                        material = 1; // Wood
+                        material = Cell::WOOD; // Wood
                     } else if (e.key.key == SDLK_3) {
-                        material = 2; // Fire
+                        material = Cell::FIRE; // Fire
                     } else if (e.key.key == SDLK_4) {
-                        material = 3; // Water
+                        material = Cell::WATER; // Water
                     }
                 }
             }

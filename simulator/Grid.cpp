@@ -13,7 +13,7 @@ Grid::Grid(int width, int height) : width{width}, height{height} {
     initThreadPool();
 }
 
-void Grid::setCell(int x, int y, int material, int radius) {
+void Grid::setCell(int x, int y, Cell::Material material, int radius) {
     for (int xDiff = -radius; xDiff < radius; xDiff++) {
         for (int yDiff = -radius; yDiff < radius; yDiff++) {
             if (xDiff * xDiff + yDiff * yDiff <= radius * radius) {
@@ -22,7 +22,7 @@ void Grid::setCell(int x, int y, int material, int radius) {
                 if (getCell(newX, newY) != nullptr) {
                     Cell *newCell = &gridData.at(newX + newY * width);
                     newCell->setPosition(newX, newY);
-                    newCell->setMaterial(Cell::WATER);
+                    newCell->setMaterial(material);
                 }
             }
         }
@@ -42,18 +42,7 @@ void Grid::step() {
     }
 }
 
-//TODO: Move to per-cell behaviour checking (using alternating-regioned threads) to fix current race conditions.
-//          - Base simulation on current grid and update in place.
-//          - Publicize Grid Cell defn, and seperate Cell logic from Grid. Make grid resp. for simulation calls only.
-//          - Each frame, split sim space into a grid of chunks of predetermined size.
-//          - Alternate offset of chunking so that each frame's chunks are centered on the corner intersection of prev.
-//          - When simulating a chunk, only allow interactions and movement within that chunk.
-//              - Chunks can be run in parallel now, but within each chunk particles can have seeded stochastic behavr.
 //TODO: Add generalized velocity instead of hardcoded gravity swapping/spreading.
-//          - Each cell has v. and h. velocity, calculate movement through fast marching.
-//          - Convert excess velocity into (seeded random) "splashing" velocity, for incident and impacted particle,
-//              based on density value/ratio.
-//          - Implement gravity as global downwards force for applicable particles
 //              - Add in static friction to prevent constant "sliding" from prev. splashing velocity.
 //                  - Maybe using a "stopped" flag that gets updated by collision/movement or updates nearby
 //TODO: Implement fire/wood behaviour, and other generalized particle components.

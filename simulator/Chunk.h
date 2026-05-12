@@ -10,17 +10,10 @@ public:
 
     Chunk() = delete;
 
-    // Chunk(const Chunk& chunk) = delete;
-    //
-    // Chunk(Chunk &&) = delete;
-    //
-    // Chunk& operator=(const Chunk& chunk) = delete;
-    //
-    // Chunk& operator=(Chunk &&) = delete;
-
-    // Calls step() on each pixel in this Chunk.
+    // If the current frame is appropriate for this Chunk's offset, calls step() on each pixel in it.
     void step() const;
 
+    // Returns if the given coordinates lie within the area visible to Cells in the chunk.
     bool isVisible(int x, int y) const;
 
 private:
