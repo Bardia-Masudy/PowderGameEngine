@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cstdlib>
 
-#define MAX_VELOCITY 10
+#define MAX_VELOCITY 10.f
 
 Cell::Cell(int x, int y, Grid *grid) : x{x}, y{y}, grid{grid} {
     vSpeed = 0;
@@ -69,24 +69,22 @@ void Cell::attemptMove(int hDist, int vDist, const Chunk *chunk) {
 }
 
 void Cell::collideCells(Cell *other) {
-    // float ratio = density / other->density / 2.;
+    float ratio = static_cast<float>(density) / (static_cast<float>(density) + static_cast<float>(other->density));
     if (hSpeed != 0 && x != other->x) {
-        float momentum = hSpeed / 2;
-
-        other->hSpeed += orientToVector(std::abs(momentum), other->hSpeed, steppedFrame >> 2 & 1);
+        float momentum = ratio * hSpeed;
+        other->hSpeed += orientToVector(std::abs(hSpeed - momentum), other->hSpeed, steppedFrame >> 2 & 1);
         vSpeed += orientToVector(std::abs(momentum), vSpeed, steppedFrame >> 2 & 1);
         hSpeed = 0;
     }
     if (vSpeed != 0 && y != other->y) {
-        float momentum = vSpeed / 2;
-
-        other->vSpeed += orientToVector(std::abs(momentum), other->vSpeed, steppedFrame >> 2 & 1);
+        float momentum = ratio * vSpeed;
+        other->vSpeed += orientToVector(std::abs(vSpeed - momentum), other->vSpeed, steppedFrame >> 2 & 1);
         hSpeed += orientToVector(std::abs(momentum), hSpeed, steppedFrame >> 2 & 1);
         vSpeed = 0;
     }
 }
 
-int Cell::orientToVector(int magnitude, int vector, bool rand) {
+int Cell::orientToVector(float magnitude, float vector, bool rand) {
     return (rand) ? (vector > 0) ? magnitude : -magnitude : (vector >= 0) ? magnitude : -magnitude;
 }
 

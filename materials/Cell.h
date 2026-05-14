@@ -49,12 +49,12 @@ private:
     char density;
     char gravity;
     // bool isStill;
-    int vSpeed, hSpeed;
+    float vSpeed, hSpeed;
     Uint32 baseColour;
     int steppedFrame{-1};
 
     // Return vector additively scaled by magnitude. Uses rand to break ties.
-    static int orientToVector(int magnitude, int vector, bool rand);
+    static int orientToVector(float magnitude, float vector, bool rand);
 };
 
 
