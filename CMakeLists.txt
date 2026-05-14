@@ -21,17 +21,17 @@ else ()
 endif ()
 
 # Create your game executable target as usual
-add_executable(roguefun main.cpp
-        render/WindowManager.h
-        render/WindowManager.cpp
-        render/LTexture.cpp
-        render/LTexture.h
-        simulator/Grid.cpp
-        simulator/Grid.h
-        materials/Cell.h
-        simulator/Chunk.cpp
-        simulator/Chunk.h
-        materials/Cell.cpp
+add_executable(roguefun src/main.cpp
+        src/render/WindowManager.h
+        src/render/WindowManager.cpp
+        src/render/LTexture.cpp
+        src/render/LTexture.h
+        src/simulator/Grid.cpp
+        src/simulator/Grid.h
+        src/materials/Cell.h
+        src/simulator/Chunk.cpp
+        src/simulator/Chunk.h
+        src/materials/Cell.cpp
 )
 #add_executable(mygame WIN32 mygame.c)
 

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <memory>
 
-#include "simulator/Grid.h"
-#include "render/WindowManager.h"
+#include "./simulator/Grid.h"
+#include "./render/WindowManager.h"
 
 int main(int argc, char *args[]) {
     // Final exit code
