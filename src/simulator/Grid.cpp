@@ -4,6 +4,8 @@
 #include <vector>
 #include <SDL3/SDL_cpuinfo.h>
 
+// TODO: Make rendering run every global frame (4 simulation frames) instead of every sim. frame
+
 Grid::Grid(int width, int height) : width{width}, height{height} {
     gridData.reserve(width * height);
     for (int i = 0; i < width * height; i++) {

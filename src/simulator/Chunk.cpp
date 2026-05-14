@@ -1,6 +1,9 @@
 #include "Chunk.h"
 #include "Grid.h"
 
+// TODO: Split texture by Chunk and join them on the main thread.
+//        - Make changed Cells add to a queue for rendering updates rather than calling over every Cell in a Chunk
+
 Chunk::Chunk(int x, int y, int width, int height, int offset, Grid *grid) : xMin{x}, yMin{y}, width{width},
                                                                             height{height}, grid{grid}, offset{offset} {
 }
