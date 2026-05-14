@@ -36,6 +36,9 @@ public:
     // Set the material (and relevant characteristic) of this cell based on given enum.
     void setMaterial(int material);
 
+    // Return vector additively scaled by magnitude. Uses rand to break ties.
+    static float orientToVector(float magnitude, float vector, bool rand);
+
     enum Material {
         AIR,
         WATER,
@@ -53,8 +56,6 @@ private:
     Uint32 baseColour;
     int steppedFrame{-1};
 
-    // Return vector additively scaled by magnitude. Uses rand to break ties.
-    static int orientToVector(float magnitude, float vector, bool rand);
 };
 
 

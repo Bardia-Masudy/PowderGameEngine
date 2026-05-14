@@ -84,8 +84,10 @@ void Cell::collideCells(Cell *other) {
     }
 }
 
-int Cell::orientToVector(float magnitude, float vector, bool rand) {
-    return (rand) ? (vector > 0) ? magnitude : -magnitude : (vector >= 0) ? magnitude : -magnitude;
+float Cell::orientToVector(float magnitude, float vector, bool rand) {
+    return (rand)
+    ? (vector > 0) ? magnitude : -magnitude
+    : (vector >= 0) ? magnitude : -magnitude;
 }
 
 void Cell::swapCells(int newX, int newY) {

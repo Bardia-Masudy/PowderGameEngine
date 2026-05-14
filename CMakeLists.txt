@@ -40,10 +40,10 @@ add_executable(roguefun
         src/render/LTexture.h
         src/simulator/Grid.cpp
         src/simulator/Grid.h
-        src/materials/Cell.cpp
-        src/materials/Cell.h
         src/simulator/Chunk.cpp
         src/simulator/Chunk.h
+        src/materials/Cell.cpp
+        src/materials/Cell.h
 )
 
 # Link to the actual SDL3 library.
@@ -55,9 +55,19 @@ enable_testing()
 # Test executable
 add_executable(roguefun_tests
         test/test.cpp
+        src/render/WindowManager.h
+        src/render/WindowManager.cpp
+        src/render/LTexture.cpp
+        src/render/LTexture.h
+        src/simulator/Grid.cpp
+        src/simulator/Grid.h
+        src/simulator/Chunk.cpp
+        src/simulator/Chunk.h
+        src/materials/Cell.cpp
+        src/materials/Cell.h
 )
 target_include_directories(roguefun_tests PRIVATE src)
-target_link_libraries(roguefun_tests PRIVATE GTest::gtest_main)
+target_link_libraries(roguefun_tests PRIVATE GTest::gtest_main SDL3_image::SDL3_image SDL3::SDL3)
 
 include(GoogleTest)
 gtest_discover_tests(roguefun_tests)
