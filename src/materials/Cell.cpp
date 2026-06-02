@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <cstdlib>
 
-#define MAX_VELOCITY 10.f
-
 Cell::Cell(int x, int y, Grid *grid) : x{x}, y{y}, grid{grid} {
     vSpeed = 0;
     hSpeed = 0;
@@ -108,6 +106,12 @@ Uint32 Cell::getColour() const {
 bool Cell::shouldStep() const {
     return gravity != 0; // TODO: temp implementation for ignoring air.
 }
+
+float Cell::getVSpeed() const { return vSpeed; }
+float Cell::getHSpeed() const { return hSpeed; }
+char  Cell::getDensity() const { return density; }
+void  Cell::setVSpeed(float v) { vSpeed = v; }
+void  Cell::setHSpeed(float h) { hSpeed = h; }
 
 void Cell::setPosition(int x, int y) {
     this->x = x;

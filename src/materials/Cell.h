@@ -33,6 +33,15 @@ public:
     // Return whether this Cell should run the step() command.
     bool shouldStep() const;
 
+    float getVSpeed() const;
+    float getHSpeed() const;
+    char  getDensity() const;
+
+    void setVSpeed(float v);
+    void setHSpeed(float h);
+
+    static constexpr float MAX_VELOCITY = 10.f;
+
     // Set the material (and relevant characteristic) of this cell based on given enum.
     void setMaterial(int material);
 
