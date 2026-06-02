@@ -1,7 +1,11 @@
 #include "Cell.h"
 #include "../simulator/Grid.h"
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
+#include <functional>
+
+#include "../util/GridUtil.h"
 
 Cell::Cell(int x, int y, Grid *grid) : x{x}, y{y}, grid{grid} {
     vSpeed = 0;
@@ -25,45 +29,29 @@ void Cell::step(const Chunk *chunk) {
 }
 
 void Cell::attemptMove(int hDist, int vDist, const Chunk *chunk) {
-    int dx = std::abs(hDist), sx = (hDist >= 0) ? 1 : -1;
-    int dy = -std::abs(vDist), sy = (vDist >= 0) ? 1 : -1;
-    int err = dx + dy, newX = x, newY = y, e2;
-
-    while (true) {
-        if (hSpeed == 0 && vSpeed == 0) { break; }
-        e2 = 2 * err;
-        if (e2 <= dx) {
-            Cell *target = grid->getCell(newX, newY + sy);
-            if (!chunk->isVisible(newX, newY + sy) || target == nullptr) {
-                vSpeed = 0;
-                break;
+    GridUtil::castRay(
+        this->x, this->y,
+        this->x + hDist,
+        this->y + vDist,
+        [&](int cx, int cy) {
+            swapCells(cx, cy);
+        },
+        [&](int cx, int cy) {
+            Cell *target = grid->getCell(cx, cy);
+            if (!chunk->isVisible(cx, cy) || target == nullptr) {
+               return true;
             }
             if (target != this && target->density >= density) {
-                swapCells(newX, newY);
-                return collideCells(target);
+               collideCells(target);
+               return true;
             }
-
-            err += dx;
-            vSpeed -= sy;
-            newY += sy;
-        }
-        if (e2 >= dy) {
-            Cell *target = grid->getCell(newX + sx, newY);
-            if (!chunk->isVisible(newX + sx, newY) || target == nullptr) {
-                hSpeed = 0;
-                break;
-            }
-            if (target != this && target->density >= density) {
-                swapCells(newX, newY);
-                return collideCells(target);
-            }
-
-            err += dy;
-            hSpeed -= sx;
-            newX += sx;
-        }
-    }
-    swapCells(newX, newY);
+            return false;
+        },
+        [&](int cx, int cy) {
+            Cell *other = grid->getCell(cx, cy);
+            if (other) collideCells(grid->getCell(cx, cy));
+            else return;
+        });
 }
 
 void Cell::collideCells(Cell *other) {
@@ -95,6 +83,9 @@ void Cell::swapCells(int newX, int newY) {
 
     std::swap(*this, *target);
 
+    hSpeed += x - newX;
+    vSpeed += y - newY;
+
     this->setPosition(prevX, prevY);
     target->setPosition(newX, newY);
 }
@@ -107,6 +98,7 @@ bool Cell::shouldStep() const {
     return gravity != 0; // TODO: temp implementation for ignoring air.
 }
 
+// TODO: Revisit wrt testing.
 float Cell::getVSpeed() const { return vSpeed; }
 float Cell::getHSpeed() const { return hSpeed; }
 char  Cell::getDensity() const { return density; }

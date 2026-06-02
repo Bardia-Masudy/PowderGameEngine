@@ -44,6 +44,8 @@ add_executable(roguefun
         src/simulator/Chunk.h
         src/materials/Cell.cpp
         src/materials/Cell.h
+        src/util/GridUtil.cpp
+        src/util/GridUtil.h
 )
 
 # Link to the actual SDL3 library.
