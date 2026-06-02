@@ -20,7 +20,7 @@ void Chunk::step() const {
     }
 }
 
-bool Chunk::isVisible(int x, int y) const {
+bool Chunk::canSee(int x, int y) const {
     return (x >= xMin - width / 2 &&
             x - xMin < width + width / 2 &&
             y >= yMin - height / 2 &&

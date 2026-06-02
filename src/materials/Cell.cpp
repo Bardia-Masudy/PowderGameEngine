@@ -38,7 +38,7 @@ void Cell::attemptMove(int hDist, int vDist, const Chunk *chunk) {
         },
         [&](int cx, int cy) {
             Cell *target = grid->getCell(cx, cy);
-            if (!chunk->isVisible(cx, cy) || target == nullptr) {
+            if (!chunk->canSee(cx, cy) || target == nullptr) {
                return true;
             }
             if (target != this && target->density >= density) {
@@ -82,9 +82,6 @@ void Cell::swapCells(int newX, int newY) {
     Cell *target = grid->getCell(newX, newY);
 
     std::swap(*this, *target);
-
-    hSpeed += x - newX;
-    vSpeed += y - newY;
 
     this->setPosition(prevX, prevY);
     target->setPosition(newX, newY);

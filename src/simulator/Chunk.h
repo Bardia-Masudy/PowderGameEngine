@@ -14,7 +14,7 @@ public:
     void step() const;
 
     // Returns if the given coordinates lie within the area visible to Cells in the chunk.
-    bool isVisible(int x, int y) const;
+    bool canSee(int x, int y) const;
 
 private:
     Grid *grid;
