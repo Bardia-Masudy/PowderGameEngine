@@ -115,3 +115,10 @@ Cell *Grid::getCell(int x, int y) {
 }
 
 int Grid::getCurrentFrame() const { return frameCount; }
+
+int Grid::countParticles() const {
+    int count = 0;
+    for (const auto &cell : gridData)
+        if (cell.shouldStep()) ++count;
+    return count;
+}

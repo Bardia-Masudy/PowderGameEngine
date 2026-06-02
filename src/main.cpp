@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <string>
 
 #include "./simulator/Grid.h"
 #include "./render/WindowManager.h"
@@ -58,6 +59,10 @@ int main(int argc, char *args[]) {
             }
 
             grid->updateTexture(gridTexture);
+
+            // TODO: Temp particle counting, add to debug options later.
+            std::string title = "roguefun | cells: " + std::to_string(grid->countParticles());
+            SDL_SetWindowTitle(gWindow, title.c_str());
 
             SDL_RenderClear(gRenderer);
             SDL_RenderTexture(gRenderer, gridTexture, nullptr, nullptr);

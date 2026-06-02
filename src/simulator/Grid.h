@@ -39,6 +39,9 @@ public:
     // Returns the cell at a position, or nullptr if outside bounds.
     Cell *getCell(int x, int y);
 
+    // Returns the number of non-air cells in the grid.
+    int countParticles() const;
+
 private:
     int width, height;
 
